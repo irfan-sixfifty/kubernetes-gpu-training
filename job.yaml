@@ -1,0 +1,30 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: irfanshaik-classifier-job
+spec:
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: irfanshaik-classifier-container
+          image: pytorch/pytorch:2.4.1-cuda12.1-cudnn9-runtime
+          command: ["bash", "-lc"]
+          args:
+            - "cd /pvcvolume && python -m pip install matplotlib && python cifar10train.py"
+          resources:
+            requests:
+              cpu: "1"
+              memory: "4Gi"
+              nvidia.com/gpu: "1"
+            limits:
+              cpu: "2"
+              memory: "8Gi"
+              nvidia.com/gpu: "1"
+          volumeMounts:
+            - mountPath: /pvcvolume
+              name: irfanshaik-storage
+      volumes:
+        - name: irfanshaik-storage
+          persistentVolumeClaim:
+            claimName: irfanshaik-task3
